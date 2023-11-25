@@ -49,7 +49,7 @@ for tutor_element in tutor_elements:
     
     # find hours taught
 
-    #isolate by using specific icon associated with div containing hours
+    # isolate by using specific icon associated with div containing hours
     check_icons = tutor_element.find_all("use", {"xlink:href": "/images/sprite2.svg#checkcircle"})
     for check_icon in check_icons:
         target_div = check_icon.find_parent("div")
@@ -84,7 +84,6 @@ for tutor_element in tutor_elements:
     cursor.execute("INSERT INTO tutors (name, member_for, hours_taught, fee) VALUES (?, ?, ?, ?)", (name, year_num, int_hours, price,))
     conn.commit()
     
-    #print(len(meta_items))
     print("----")
 
 cursor.execute("SELECT * FROM tutors")
