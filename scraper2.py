@@ -6,7 +6,22 @@ cursor = conn.cursor()
 
 
 # get webpage
-URL = "https://www.tutorhunt.com/search-results.asp?amountlower=10&amounthiger=100&ratingval=1&chkteacher=0&chkdegree=0&chkdbs=0&sortby=rank&tuitiontype=online&subjectid=Chemistry&subject=Chemistry&level=all&postcode=&sourcepage=searchresults&searchsource=sr&filter=1&type=tutor&chkmale=1&chkfemale=1&chkinternational=0&searchtext=&onlineproximity=&onlinepostcode="
+
+# subject = chemistry
+#URL = "https://www.tutorhunt.com/search-results.asp?amountlower=10&amounthiger=100&ratingval=1&chkteacher=0&chkdegree=0&chkdbs=0&sortby=rank&tuitiontype=online&subjectid=Chemistry&subject=Chemistry&level=all&postcode=&sourcepage=searchresults&searchsource=sr&filter=1&type=tutor&chkmale=1&chkfemale=1&chkinternational=0&searchtext=&onlineproximity=&onlinepostcode="
+
+subject = "drama"
+print(f"Creating table: {subject}")
+cursor.execute(f"CREATE TABLE IF NOT EXISTS {subject} (id INTEGER PRIMARY KEY, name TEXT, member_for INT, hours_taught INT, fee REAL, yearly_hours REAL GENERATED ALWAYS AS (hours_taught/member_for) STORED, yearly_pay REAL GENERATED ALWAYS AS (yearly_hours*fee) STORED);")  
+
+# general science
+#URL = "https://www.tutorhunt.com/search-results.asp?amountlower=10&amounthiger=100&ratingval=1&chkteacher=0&chkdegree=0&chkdbs=0&sortby=rank&tuitiontype=online&subjectid=General%20Science&subject=General%20Science&level=all&postcode=&sourcepage=searchresults&searchsource=sr&filter=1&type=tutor&chkmale=1&chkfemale=1&chkinternational=0&searchtext=&onlineproximity=&onlinepostcode="
+
+# drama
+URL = "https://www.tutorhunt.com/search-results.asp?amountlower=10&amounthiger=100&ratingval=1&chkteacher=0&chkdegree=0&chkdbs=0&sortby=rank&tuitiontype=online&subjectid=Drama&subject=Drama&level=all&postcode=&sourcepage=searchresults&searchsource=sr&filter=1&type=tutor&chkmale=1&chkfemale=1&chkinternational=0&searchtext=&onlineproximity=&onlinepostcode="
+
+# maths
+#URL = "https://www.tutorhunt.com/search-results.asp?amountlower=10&amounthiger=100&ratingval=1&chkteacher=0&chkdegree=0&chkdbs=0&sortby=rank&tuitiontype=online&subjectid=Maths&subject=Maths&level=all&postcode=&sourcepage=searchresults&searchsource=sr&filter=1&type=tutor&chkmale=1&chkfemale=1&chkinternational=0&searchtext=&onlineproximity=&onlinepostcode="
 page = requests.get(URL)
 
 # parse page into soup object
@@ -33,7 +48,7 @@ for tutor_element in tutor_elements:
     links = tutor_element.find_all("a") 
     for link in links:
         name = link.text.strip()
-        print(name)
+        #print(name)
 
     # find length of membership   
     member_fors = tutor_element.find_all("div", class_="usercard2metavalue", string=lambda text: "years" in text.lower())
@@ -45,7 +60,7 @@ for tutor_element in tutor_elements:
                 year_num += char
             else:
                 break
-        print("active member for: ", year_num, "years")
+        #print("active member for: ", year_num, "years")
     
     # find hours taught
 
@@ -61,7 +76,7 @@ for tutor_element in tutor_elements:
             else:
                 break
         int_hours = int(hours)
-        print("has worked a total of: ", int_hours, "hours")
+        #print("has worked a total of: ", int_hours, "hours")
 
 
     # find price per hour
@@ -71,25 +86,26 @@ for tutor_element in tutor_elements:
         price_parts = price.text.replace("£", "").split(" - ")
         if len(price_parts) == 1:
             price = float(price_parts[0])
-            print("charges on average:", price)
+            #print("charges on average:", price)
 
         elif len(price_parts) == 2:
             lower = float(price_parts[0])
             higher = float(price_parts[1])
             price = (lower+higher)/2
-            print("charges on average:", price)
+            #print("charges on average:", price)
 
 
     # calculate total amounts earnt and income per x
-    cursor.execute("INSERT INTO tutors (name, member_for, hours_taught, fee) VALUES (?, ?, ?, ?)", (name, year_num, int_hours, price,))
+    print(f"Inserting data into table: {subject}")
+    cursor.execute(f"INSERT INTO {subject} (name, member_for, hours_taught, fee) VALUES (?, ?, ?, ?)", (name, year_num, int_hours, price,))
     conn.commit()
     
     print("----")
 
-cursor.execute("SELECT * FROM tutors")
-rows = cursor.fetchall()
-for row in rows:
-    print(row)
+#cursor.execute(f"SELECT * FROM {subject}")
+#rows = cursor.fetchall()
+#for row in rows:
+    #print(row)
   
 
    
