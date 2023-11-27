@@ -24,7 +24,11 @@ title = driver.title
 # establish waiting strategy
 driver.implicitly_wait(0.5)
 
+
+# input subjects you want to scrape here
 list_of_subjects = ["chemistry", "biology", "english", "physics"]
+
+# initialise iteration through list of subjects
 for current_subject in list_of_subjects:
     print("starting a page")
     # find items on page to interact with
@@ -120,11 +124,12 @@ for current_subject in list_of_subjects:
                 #print("charges on average:", price)
 
 
-        # calculate total amounts earnt and income per x
+        # insert all data into table 
         print(f"Inserting data into table: {current_subject}")
         cursor.execute(f"INSERT INTO {current_subject} (name, member_for, hours_taught, fee) VALUES (?, ?, ?, ?)", (name, year_num, int_hours, price,))
         conn.commit()
 
+    # back to homepage to restart loop
     driver.back()
     driver.implicitly_wait(0.5)
     
