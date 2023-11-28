@@ -25,38 +25,66 @@ def nav_scrape(station_name):
     search_button.click()
     driver.implicitly_wait(0.5)
 
+    ''' this doesnt work as it brings up log in page
     # get URL of current page
     current_url = driver.current_url
+    print(current_url)
 
     # get content of current page
-    page = requests.get(current_url)
+    page = requests.get(current_url)'''
+
+    # get html content of current page (post log in)
+    page = driver.page_source
 
     # parse into beautiful soup object
-    soup = BeautifulSoup(page.content, "html.parser")
+    soup = BeautifulSoup(page, "html.parser")
+    
 
     # scrape latitude and longitude
+
+    
     try:
-        latitude_input = soup.find(id = "parameters[lat]")
+        latitude_input = soup.find("input", id="parameters[lat]")
+        #print("this is latitude_input:", latitude_input)
         latitude = latitude_input.get("value")
+        print(latitude)
     except AttributeError:
-        print("no location")
+        print("no lat")
         driver.back()
         return
-
+    
     try:
-        longitude_input = soup.find(id = "parameters[lng]]")
-        longitude = latitude_input.get("value")
+        longitude_input = soup.find("input", id = "parameters[lng]")
+        longitude = longitude_input.get("value")
+        (print(longitude))
     except AttributeError:
-        print("no location")
+        print("no long")
         driver.back()
         return
 
     # insert into table and return to previous page
-    cursor.execute(f"INSERT INTO processed_stations WHERE name IS {station_name} (lattitude, longitude) VALUES (?, ?,)", latitude, longitude)
-    print
+    update_query = "UPDATE processed_stations SET latitude = ?, longitude = ? WHERE Place_name = ?"
+    update_list = [latitude, longitude, station_name]
+    cursor.execute(update_query, update_list)
     conn.commit()
+
+    cursor.execute("SELECT * FROM processed_stations WHERE Place_name = ?", (station_name,))
+    updated_row = cursor.fetchone()  
+    conn.commit()
+    print(updated_row)
+    
+    #does it need more time to update?
+    driver.implicitly_wait(1)
     driver.back()
 
+
+def nav_scrape2(station_name):
+
+    driver.implicitly_wait(0.5)
+    location = driver.find_element(by=By.CLASS_NAME, value="place_name")
+    location.click()
+    driver.implicitly_wait(0.5)
+    nav_scrape(station_name)
 
 
 
@@ -86,7 +114,7 @@ driver.implicitly_wait(0.5)
 #initiate loop through stations in table, so i can input station name into 
 
 # select all from table
-cursor.execute("SELECT * FROM processed_stations;")
+cursor.execute("SELECT * FROM processed_stations WHERE  Place_type IN ('E-bike station', 'Standard place');")
 
 # fetch all table data into iterable
 rows = cursor.fetchall()
@@ -95,12 +123,19 @@ rows = cursor.fetchall()
 print("initiating loop")
 first_row = True 
 print("first row true")
+station_name = ""
 for row in rows:
     if first_row:
         first_row = False
         continue
     #call function that takes in place name and inserts lat and long into table
-    nav_scrape(row[1])    
+    station_name = (row[1])
+    if station_name == "glasgow green":
+        nav_scrape2(station_name)
+
+    print(station_name)
+    nav_scrape(station_name)
+    print(row)    
 
 
 
