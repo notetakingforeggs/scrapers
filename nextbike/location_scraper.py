@@ -15,6 +15,7 @@ import sqlite3
 def nav_scrape(station_name):
 
     # find items on page
+    '''better with something like if page url has places/?action then check counter, is 0 take first one from classes and increase counter, but its only 5 so maybe i do by hand.'''
     driver.implicitly_wait(0.5)
     location = driver.find_element(by=By.ID, value="parameters[search_term]")
     search_button = driver.find_element(by=By.ID, value = "places_get")
@@ -130,6 +131,7 @@ for row in rows:
         continue
     #call function that takes in place name and inserts lat and long into table
     station_name = (row[1])
+    '''this bit really is not optimal. needs to be dealt with inside nav_scrape'''
     if station_name == "glasgow green":
         nav_scrape2(station_name)
 
