@@ -9,6 +9,7 @@ from selenium.common.exceptions import NoSuchElementException
 
 driver = webdriver.Chrome()
 
+from dateutil.parser import parse
 import time
 
 # imports for beautiful soup
@@ -42,7 +43,7 @@ station_checks.click()
 loop = False
 while loop == False:
     try:
-        today = driver.find_element(by=By.XPATH, value ='//span[text() = "YESTERDAY"]')
+        today = driver.find_element(by=By.XPATH, value ='//span[text() = "TODAY"]')
         print ("foound")
         loop = True
     except NoSuchElementException:
@@ -62,14 +63,48 @@ soup = BeautifulSoup(page, "html.parser")
 
 tab_index = soup.find('div', class_= 'n5hs2j7m oq31bsqd gx1rr48f qh5tioqs')
 
-print(tab_index.prettify())
+#print(tab_index.prettify())
+'''
+content = tab_index.find_all('span', class_= None)
+for span in content:
+    print(span.text.strip())'''
 
-tabs = tab_index.find_all('div', role_='row')
+date_content = tab_index.find_all('div', class_='copyable-text')
+for div in date_content:
+        contains_date = div['data-pre-plain-text']
 
-for tab in tabs:
-    print("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@")
-    print(tab.text.strip)
-    break
+        parsed_date = parse(contains_date,fuzzy=True)
+        date = str(parsed_date.date())
+        print(f"the date is: {date}")
+       
+        
+        spans = div.find_all('span', class_= None)
+        for span in spans:
+            # TODO this needs to be fixed so it searches string inside span for and returns the place number - wont work if there is more text than just that
+            try:
+                place_number = int(span.text.strip())
+
+            except ValueError:
+                continue
+            print("station code is:", place_number)
+            print("-----------------")
+
+        cursor.execute("UPDATE processed_stations SET last_checked = ? WHERE Place_number = ?", (date, place_number))
+        conn.commit()
+        print('tried to add')
+# TODO also insert a columns of date since last check which goes thru each station and subtracts the date since last checkd from the current date to get a nubmer of days.
+'''        
+a-could scrape date and time from each message to add to the table
+
+b-could clear whatsapp chat history at the end of each cycle, so that every scanned message could only be scanned on the day it was posted
+
+a would be more coding in the scrape, and more date into the table.
+b would involve a further selenium automation at the end of each cycle which tends to be kinda slow, but would also keep the chat clean
+but maybe someone wants that chat
+
+a feels harder, but also feels cleaner.
+'''
+
 
 # TODO find in this soup everytime a station code is mentioned, insert the date into the date column of the table IF the current cell value isnt the same date?
 '''maybe in here there is some value in optimising search strategy at some point?'''
