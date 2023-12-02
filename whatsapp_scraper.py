@@ -8,7 +8,7 @@ from selenium.webdriver.common.actions.wheel_input import ScrollOrigin
 from selenium.common.exceptions import NoSuchElementException
 
 driver = webdriver.Chrome()
-
+# time imports
 from dateutil.parser import parse
 import time
 
@@ -19,9 +19,11 @@ from bs4 import BeautifulSoup
 # import for db
 import sqlite3
 
+# connecting db
 conn = sqlite3.connect("stations.db")
 cursor = conn.cursor()
 
+'''beginning automation'''
 
 # navigate to web page
 driver.get("https://web.whatsapp.com/")
@@ -31,21 +33,19 @@ driver.implicitly_wait(5)
 time.sleep(15) # replace this with explicit wait?
 
 # find appropriate groupchat on page and click
-#tats = driver.find_element(by=By.XPATH, value='//span[text() = "Tats"]')
-#tats.click()
 station_checks = driver.find_element(by = By.XPATH, value = '//span[text() = "station checks"]')
-# TODO need more wait here, sometimes clicking and then it goes back to loading screen. click too early?
+
+# TODO I put a 3s sleep wait here, it was sometimes clicking and then it goes back to loading screen. should find more elegant way to do this.
+time.sleep(3)
 station_checks.click()
 
 
-
-# TODO scroll up to part where it says today? (assuming initiated run in the morning and on repeat every n hours. no point scraping 2 days at a time?)
-''' so the rows maintain the same xpath but the iner html content changes'''
+# scrolling up in whatsap chat
 loop = False
 while loop == False:
     try:
         today = driver.find_element(by=By.XPATH, value ='//span[text() = "THURSDAY"]')
-        print ("foound")
+        print ("scrolling up complete")
         loop = True
     except NoSuchElementException:
         print("not found, scrolling up")
@@ -58,10 +58,12 @@ while loop == False:
 print(" try statement passed, scrolling done, initiating scrape")
 time.sleep(3)
 
-# make soup object out of page with stations on it from where it says today/yesterday
+''' beginning scrape '''
+# make soup object out of page with stations on it
 page = driver.page_source
 soup = BeautifulSoup(page, "html.parser")
 
+#find the lowest container that holds all the information to scrape
 tab_index = soup.find('div', class_= 'n5hs2j7m oq31bsqd gx1rr48f qh5tioqs')
 
 # find the deepest div type containing both the date and the place number and iterate through them
@@ -76,34 +78,22 @@ for div in date_content:
        
         # extract place number
         spans = div.find_all('span', class_= None)  
-        for span in spans:
-            # TODO this needs to be fixed so it searches string inside span for and returns the place number - wont work if there is more text than just that
-            try:
-                place_number = (span.text.strip())
-                
-                int(place_number)
-            except ValueError:
-                print("value error")
-                continue
-            print("station code is:", place_number)
+        for span in spans:            
+            station_codes = cursor.execute('SELECT place_number FROM processed_stations')
+            for station_code in station_codes:
+                if (station_code[0] in span.text.strip()):
+                    print(station_code[0])
+                    place_number = station_code[0]
+                    int(place_number)
+                else:
+                    continue
+        print("station code is:", place_number)
             
 
-        # update db
+        # update db to include the date last checked, and below to calculate the time since last checked. could combine to one line maybe?
         cursor.execute("UPDATE processed_stations SET last_checked = ? WHERE Place_number = ?", (date, place_number,))
         conn.commit()
         cursor.execute("UPDATE processed_stations SET days_since = CAST(julianday('now') - julianday(last_checked) AS INTEGER);")        
         conn.commit()
-        print('tried to add')
-
-
-
-
-
-
-
-# TODO find in this soup everytime a station code is mentioned, insert the date into the date column of the table IF the current cell value isnt the same date?
-'''maybe in here there is some value in optimising search strategy at some point?'''
-
-
-
+ 
 # TODO then put it all on a web app and build a pretty front page
