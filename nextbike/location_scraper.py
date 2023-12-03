@@ -14,8 +14,7 @@ import sqlite3
 '''this is a function to navigate to the station page and scrape location data'''
 def nav_scrape(station_name):
 
-    # find items on page
-    '''better with something like if page url has places/?action then check counter, is 0 take first one from classes and increase counter, but its only 5 so maybe i do by hand.'''
+    # find items on page    
     driver.implicitly_wait(0.5)
     location = driver.find_element(by=By.ID, value="parameters[search_term]")
     search_button = driver.find_element(by=By.ID, value = "places_get")
@@ -26,14 +25,6 @@ def nav_scrape(station_name):
     search_button.click()
     driver.implicitly_wait(0.5)
 
-    ''' this doesnt work as it brings up log in page
-    # get URL of current page
-    current_url = driver.current_url
-    print(current_url)
-
-    # get content of current page
-    page = requests.get(current_url)'''
-
     # get html content of current page (post log in)
     page = driver.page_source
 
@@ -41,9 +32,7 @@ def nav_scrape(station_name):
     soup = BeautifulSoup(page, "html.parser")
     
 
-    # scrape latitude and longitude
-
-    
+    # scrape latitude and longitude    
     try:
         latitude_input = soup.find("input", id="parameters[lat]")
         #print("this is latitude_input:", latitude_input)
@@ -78,13 +67,12 @@ def nav_scrape(station_name):
     driver.implicitly_wait(1)
     driver.back()
 
-
+'''this is an unfinished piece of code to deal with the issue of search terms throwing multiple options. would be better with something like if page url has places/?action then check counter, is 0 take first one from classes and increase counter, but its only 5 so maybe i do by hand'''
 def nav_scrape2(station_name):
 
     driver.implicitly_wait(0.5)
     location = driver.find_element(by=By.CLASS_NAME, value="place_name")
     location.click()
-    driver.implicitly_wait(0.5)
     nav_scrape(station_name)
 
 
