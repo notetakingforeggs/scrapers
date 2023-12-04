@@ -1,14 +1,10 @@
-# %%
+# imports for map
 import folium
 from folium import plugins
 from IPython.display import display, HTML
-
 import sqlite3
 
-import os
-
-#turn whole thing into a function to be called?
-def create_map():
+def map():
     conn = sqlite3.connect("stations.db")
     cursor = conn.cursor()
 
@@ -65,12 +61,10 @@ def create_map():
     m.save("map.html")
     return m
 
+    
+
+ 
 
 
-# %%
 
 
-
-
-
-#%%
