@@ -1,0 +1,7 @@
+Flask
+Flask-Session
+selenium
+beautifulsoup4
+python-dateutil
+folium
+ipython
