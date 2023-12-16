@@ -7,10 +7,21 @@ from selenium.webdriver.common.action_chains import ActionChains
 from selenium.webdriver.common.actions.wheel_input import ScrollOrigin
 from selenium.common.exceptions import NoSuchElementException
 
-driver = webdriver.Chrome()
+
 # time imports
 from dateutil.parser import parse
 import time
+
+# alterations to chromedriver to allow it to run headless, and thus on python anywhere
+chrome_options = webdriver.ChromeOptions()
+chrome_options.add_argument("--no-sandbox")
+chrome_options.add_argument("--headless")
+chrome_options.add_argument("--disable-gpu")
+# this to solve issue of headless browser using old chrome or something?
+chrome_options.add_argument("user-agent=User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/98.0.4758.102 Safari/537.36")
+
+chrome_options.add_argument('--user-data-dir=./User_Data')
+driver = webdriver.Chrome(options=chrome_options)
 
 # imports for beautiful soup
 import requests
@@ -28,25 +39,32 @@ def whatsapp_scrape():
 
     # navigate to web page
     print("IN THE SCRAPE FUNCTION NOW")
-    driver.get("https://web.whatsapp.com/")
-
-    # give time to scan QR
-    driver.implicitly_wait(5)
-    time.sleep(15) # replace this with explicit wait?
-
-    # find appropriate groupchat on page and click
-    station_checks = driver.find_element(by = By.XPATH, value = '//span[text() = "station checks"]')
-
-    # TODO I put a 3s sleep wait here, it was sometimes clicking and then it goes back to loading screen. should find more elegant way to do this.
-    time.sleep(3)
+    driver.get("https://web.whatsapp.com/")   
+    
+    # find appropriate groupchat on page and click  
+    print("loading whatsapp web")
+    time.sleep(9)
+    driver.save_screenshot("hasitloaded.png")
+    element_locator = (By.XPATH, '//span[text() = "station checks"]')
+    try:
+        station_checks = WebDriverWait(driver, 15).until(
+        EC.visibility_of_element_located(element_locator)
+    )
+    except TimeoutError:
+        print("couldnt find")
+        driver.save_screenshot("thiswhereimat.png")
+    # click on station checks chat.
+    driver.save_screenshot("stationcheckspresent.png")
     station_checks.click()
 
 
     # scrolling up in whatsap chat
     loop = False
-    while loop == False:
+    counter = 0
+    while loop == False and counter < 4:
         try:
-            today = driver.find_element(by=By.XPATH, value ='//span[text() = "THURSDAY"]')
+            counter +=1
+            today = driver.find_element(by=By.XPATH, value ='//span[text() = "YESTERDAY"]')
             print ("scrolling up complete")
             loop = True
         except NoSuchElementException:
@@ -98,5 +116,6 @@ def whatsapp_scrape():
             conn.commit()
             cursor.execute("UPDATE processed_stations SET days_since = CAST(julianday('now') - julianday(last_checked) AS INTEGER);")        
             conn.commit()
+            print("station last checked updated")
     
     return

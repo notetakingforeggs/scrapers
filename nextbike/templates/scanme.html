@@ -1,0 +1,9 @@
+{% extends "layout.html" %}
+
+{% block main %}
+
+ <h1> Whatsapp settings -> link device -> Scan this QR code</h1>
+ <img src = "{{ url_for('static', filename='QR.png') }}" />
+ <h1>Once you have linked your device you can update the map by clicking "update" in the navbar/menu</h1>
+
+ {% endblock %}
