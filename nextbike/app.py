@@ -49,8 +49,8 @@ def map_make():
 @app.route("/update")
 def update_db():
     
-    # call whatsapp scrape function
-    update()
+    #this has been absorbed into the link route below
+    
     # redirect to map page 
     return redirect("/map") 
 
@@ -73,13 +73,15 @@ def link():
             if counter >= 10:
                 # will this stop the thread?
                 print("probably logged in if still no QR - returning map")
-                return render_template("map_template.html")
+                return redirect("/map")
         #return qr for scanning    
         print("returning scanme.html")
         return render_template("scanme.html")
     else:
         #here put a thing being like - already logged in
-        return render_template("index.html")
+        print("QR exists already")
+        whatsapp_scrape()
+        return redirect("/map")
     
 
 
