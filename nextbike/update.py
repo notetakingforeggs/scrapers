@@ -8,12 +8,11 @@ from selenium.webdriver.common.actions.wheel_input import ScrollOrigin
 from selenium.common.exceptions import NoSuchElementException
 from selenium.common.exceptions import TimeoutException
 
-
 # time imports
 from dateutil.parser import parse
 import time
 
-# alterations to chromedriver to allow it to run headless, 
+# alterations to chromedriver to allow it to run headless, and thus on python anywhere
 chrome_options = webdriver.ChromeOptions()
 chrome_options.add_argument("--no-sandbox")
 chrome_options.add_argument("--headless")
@@ -30,60 +29,20 @@ from bs4 import BeautifulSoup
 
 # import for db
 import sqlite3
-
-# import for QR retrieval
-# time imports
-from dateutil.parser import parse
-import time
-import os
-from retrieveQR import retrieve_qr
-
-
-def whatsapp_scrape():
+''' not working, how can i use the same logged in webdriver? idk'''
+def update():
     # connecting db
     conn = sqlite3.connect("stations.db")
     cursor = conn.cursor()
 
+    '''beginning automation'''
+
     # navigate to web page
     print("IN THE SCRAPE FUNCTION NOW")
-    driver.get("https://web.whatsapp.com/") 
-
-    #QR retrieval (in the same function to avoid log in issues) 
-    print("getting webpage and initiating qr retrieval")
-
-    # active wait for and locate QR code
-    time.sleep(1)
-    driver.save_screenshot("qrorloggedin.png")
-    element_locator = (By.XPATH, '/html/body/div[1]/div/div[2]/div[3]/div[1]/div/div/div[2]/div/canvas')
-    try:
-        QR = WebDriverWait(driver, 15).until(
-        EC.visibility_of_element_located(element_locator)
-    )
-        print("QR should be visible, screenshot now")
-
-        # screenshot QR   
-        QR.screenshot('static/QR.png')
-    except TimeoutException:
-        print("logged in already?")
-    # wait for XPATH of something past the QR
-    try:
-        next_element_locator = (By.XPATH, '//*[@id="app"]/div/div[2]/div[3]/header/div[2]/div/span/div[4]/div/span')
-        newchat = WebDriverWait(driver, 100).until(
-            EC.visibility_of_element_located(next_element_locator)
-        )
-       
-    except TimeoutException:
-        print("couldnt find element post log in")
-        #driver.close()
-
-    # save screenshot to check login
-    driver.save_screenshot("passedlogin.png")
-    print("passed log in")
-
-    ''' preparations for scrape '''
+    driver.get("https://web.whatsapp.com/")   
     
     # find appropriate groupchat on page and click  
-    print("loading whatsapp web")
+    #print("loading whatsapp web")
     #time.sleep(9)
     driver.save_screenshot("hasitloaded.png")
     element_locator = (By.XPATH, '//span[text() = "station checks"]')

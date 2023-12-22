@@ -31,7 +31,7 @@ def retrieve_qr():
 
     # navigate to web page
     print("IN THE QR RETRIEVAL FUNCTION NOW")
-    driver.get("https://web.whatsapp.com/")
+    #driver.get("https://web.whatsapp.com/")
 
     # active wait for and locate QR code
     time.sleep(1)
@@ -54,14 +54,14 @@ def retrieve_qr():
        
     except TimeoutError:
         print("couldnt find element post log in")
-        driver.close()
+        #driver.close()
 
     # save screenshot to check login
     driver.save_screenshot("passedlogin.png")
 
     # Delete QR png
-    os.remove("static/QR.png")
-    print("QR.png deleted")
+    #os.remove("static/QR.png")
+    #print("QR.png deleted")
 
     # close driver
     #driver.close()
