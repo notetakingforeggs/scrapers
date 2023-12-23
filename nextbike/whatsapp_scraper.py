@@ -51,12 +51,10 @@ def whatsapp_scrape():
     #QR retrieval (in the same function to avoid log in issues) 
     print("getting webpage and initiating qr retrieval")
 
-    # active wait for and locate QR code
-    time.sleep(1)
-    driver.save_screenshot("qrorloggedin.png")
+    # active wait for and locate QR code    
     element_locator = (By.XPATH, '/html/body/div[1]/div/div[2]/div[3]/div[1]/div/div/div[2]/div/canvas')
     try:
-        QR = WebDriverWait(driver, 15).until(
+        QR = WebDriverWait(driver, 7).until(
         EC.visibility_of_element_located(element_locator)
     )
         print("QR should be visible, screenshot now")
@@ -64,28 +62,12 @@ def whatsapp_scrape():
         # screenshot QR   
         QR.screenshot('static/QR.png')
     except TimeoutException:
-        print("logged in already?")
-    # wait for XPATH of something past the QR
-    try:
-        next_element_locator = (By.XPATH, '//*[@id="app"]/div/div[2]/div[3]/header/div[2]/div/span/div[4]/div/span')
-        newchat = WebDriverWait(driver, 100).until(
-            EC.visibility_of_element_located(next_element_locator)
-        )
-       
-    except TimeoutException:
-        print("couldnt find element post log in")
-        #driver.close()
-
-    # save screenshot to check login
-    driver.save_screenshot("passedlogin.png")
-    print("passed log in")
+        print("logged in already?") 
 
     ''' preparations for scrape '''
     
     # find appropriate groupchat on page and click  
-    print("loading whatsapp web")
-    #time.sleep(9)
-    driver.save_screenshot("hasitloaded.png")
+    print("loading whatsapp web") 
     element_locator = (By.XPATH, '//span[text() = "station checks"]')
     try:
         station_checks = WebDriverWait(driver, 15).until(
@@ -116,9 +98,8 @@ def whatsapp_scrape():
             .scroll_from_origin(scroll_origin, 0, -10000)\
             .perform()
 
-    print(" try statement passed, scrolling done, initiating scrape")
-    time.sleep(3)
-
+    print("scrolling done, initiating scrape")
+    
     ''' beginning scrape '''
     # make soup object out of page with stations on it
     page = driver.page_source
@@ -158,5 +139,6 @@ def whatsapp_scrape():
             cursor.execute("UPDATE processed_stations SET days_since = CAST(julianday('now') - julianday(last_checked) AS INTEGER);")        
             conn.commit()
             print("station last checked updated")
+            
     
     return
