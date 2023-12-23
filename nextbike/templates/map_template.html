@@ -2,8 +2,17 @@
 
 {% block main %}
 
- <h1> Glasgow Nextbike Stations</h1>
- {{ iframe|safe }}
- <h3>Map last updated:{{last_updated}} </h3>
+<h1> Glasgow Nextbike Stations</h1>
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-md-2"></div>
+        <div class="col-md-8">
+            {{ iframe|safe }}
+        </div>
+        <div class="col-md-2"></div>
+    </div>
+</div>
+
+
 
  {% endblock %}

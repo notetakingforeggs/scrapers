@@ -42,16 +42,13 @@ def map_make():
     m = map()     
     
     # get the root of the map and render into a html string
-    m.get_root().width = "800px"
-    m.get_root().height = "600px"
+    m.get_root().width = "100%"
+    m.get_root().height = "500px"
     iframe = m.get_root()._repr_html_()    
 
-    # return the map template with the map (g last updated declared in link route)
-    if hasattr(g, 'last_updated'):
-        print(g.last_updated)
-        return render_template("map_template.html", iframe=iframe, last_updated=g.last_updated)
-    print("!hasattr")
-    return render_template("map_template.html", iframe=iframe, last_updated="unknown")
+    # return the map template with the map            
+    return render_template("map_template.html", iframe=iframe)
+    
 
 # link device/update unified route
 @app.route("/link")
@@ -72,7 +69,7 @@ def link():
             if counter >= 5:
                 # will this stop the thread?
                 print("probably logged in if still no QR - returning map")
-                g.last_updated = f"{(datetime.now().date())}, {(datetime.now().time())}"
+                #g.last_updated = f"{(datetime.now().date())}, {(datetime.now().time())}"
                 print(g.last_updated)
                 return redirect("/map")
         #return qr for scanning    
@@ -81,8 +78,7 @@ def link():
     else:
         #here put a thing being like - already logged in
         print("QR exists already")
-        whatsapp_scrape()
-        g.last_updated = f"{(datetime.now().date())}"
+        whatsapp_scrape()        
         return redirect("/map")
     #this should update last checked only when log in has already occurred. should be fine
        
