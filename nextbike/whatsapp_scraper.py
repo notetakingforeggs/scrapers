@@ -51,18 +51,20 @@ def whatsapp_scrape():
     #QR retrieval (in the same function to avoid log in issues) 
     print("getting webpage and initiating qr retrieval")
 
-    # active wait for and locate QR code    
-    element_locator = (By.XPATH, '/html/body/div[1]/div/div[2]/div[3]/div[1]/div/div/div[2]/div/canvas')
-    try:
-        QR = WebDriverWait(driver, 7).until(
-        EC.visibility_of_element_located(element_locator)
-    )
-        print("QR should be visible, screenshot now")
+    # active wait for and locate QR code  *** issue here, need to get a longer wait for qr when needed, and shorter when not
+    # maybe if os.qr.png !exists do the wait for QR otherwise go straight to next bit.
+    if not os.path.exists("static/QR.png"):  
+        element_locator = (By.XPATH, '/html/body/div[1]/div/div[2]/div[3]/div[1]/div/div/div[2]/div/canvas')
+        try:
+            QR = WebDriverWait(driver, 60).until(
+            EC.visibility_of_element_located(element_locator)
+        )
+            print("QR should be visible, screenshot now")
 
-        # screenshot QR   
-        QR.screenshot('static/QR.png')
-    except TimeoutException:
-        print("logged in already?") 
+            # screenshot QR   
+            QR.screenshot('static/QR.png')
+        except TimeoutException:
+            print("logged in already?") 
 
     ''' preparations for scrape '''
     

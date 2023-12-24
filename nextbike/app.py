@@ -11,6 +11,7 @@ from retrieveQR import retrieve_qr
 import time
 from datetime import datetime
 from threading import Thread
+import shutil
 
 # Configure application
 app = Flask(__name__)
@@ -66,29 +67,29 @@ def link():
             print("no QR yet")
             time.sleep(5)
             counter +=1
-            if counter >= 5:
-                # will this stop the thread?
-                print("probably logged in if still no QR - returning map")
-                #g.last_updated = f"{(datetime.now().date())}, {(datetime.now().time())}"
-                print(g.last_updated)
+            if counter >= 5:                
+                print("probably logged in if still no QR - returning map")                
                 return redirect("/map")
         #return qr for scanning    
         print("returning scanme.html")
+        #put a thing here saying you have x amount of time to scan. maybe a countdown?
         return render_template("scanme.html")
     else:
         #here put a thing being like - already logged in
         print("QR exists already")
-        whatsapp_scrape()        
-        return redirect("/map")
-    #this should update last checked only when log in has already occurred. should be fine
-       
+        try:
+            whatsapp_scrape()        
+            return redirect("/map")
+        except UnboundLocalError:
+            print("update attempted unlinked")
+            os.remove("static/QR.png")
+            shutil.rmtree("User_Data") 
+            print("removed User Data and QR.png. try link again")
+            #here make a new page saying, plase link again
+            return redirect('/link')
+        
+        #when home make new page as above. check and test
 
     
-
-
-
-
-''' 
-driver screenshots qr which is saved. 
-
-after lunch: make browser headless. persistent log in from whatsapp. hide update button if not logged in? or at least give error page, upload to pyany'''
+''' also would be good to make a de-link button maybe? which does the same as above but onclick'''
+       

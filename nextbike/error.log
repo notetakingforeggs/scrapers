@@ -1,0 +1,41 @@
+[2023-12-24 13:03:25 +0000] [192355] [INFO] Starting gunicorn 21.2.0
+[2023-12-24 13:03:25 +0000] [192355] [INFO] Listening at: http://0.0.0.0:5000 (192355)
+[2023-12-24 13:03:25 +0000] [192355] [INFO] Using worker: sync
+[2023-12-24 13:03:25 +0000] [192356] [INFO] Booting worker with pid: 192356
+[2023-12-24 13:04:50 +0000] [192355] [CRITICAL] WORKER TIMEOUT (pid:192356)
+[2023-12-24 13:04:50 +0000] [192356] [INFO] Worker exiting (pid: 192356)
+[2023-12-24 13:04:51 +0000] [192355] [ERROR] Worker (pid:192356) exited with code 1
+[2023-12-24 13:04:51 +0000] [192355] [ERROR] Worker (pid:192356) exited with code 1.
+[2023-12-24 13:04:51 +0000] [193333] [INFO] Booting worker with pid: 193333
+[2023-12-24 13:05:17,949] ERROR in app: Exception on /link [GET]
+Traceback (most recent call last):
+  File "/home/squarey/Desktop/code/scrapers/nextbike/nextbike_venv/lib/python3.10/site-packages/flask/app.py", line 1455, in wsgi_app
+    response = self.full_dispatch_request()
+  File "/home/squarey/Desktop/code/scrapers/nextbike/nextbike_venv/lib/python3.10/site-packages/flask/app.py", line 869, in full_dispatch_request
+    rv = self.handle_user_exception(e)
+  File "/home/squarey/Desktop/code/scrapers/nextbike/nextbike_venv/lib/python3.10/site-packages/flask/app.py", line 867, in full_dispatch_request
+    rv = self.dispatch_request()
+  File "/home/squarey/Desktop/code/scrapers/nextbike/nextbike_venv/lib/python3.10/site-packages/flask/app.py", line 852, in dispatch_request
+    return self.ensure_sync(self.view_functions[rule.endpoint])(**view_args)
+  File "/home/squarey/Desktop/code/scrapers/nextbike/app.py", line 81, in link
+    whatsapp_scrape()
+  File "/home/squarey/Desktop/code/scrapers/nextbike/whatsapp_scraper.py", line 81, in whatsapp_scrape
+    station_checks.click()
+UnboundLocalError: local variable 'station_checks' referenced before assignment
+[2023-12-24 13:05:40,973] ERROR in app: Exception on /link [GET]
+Traceback (most recent call last):
+  File "/home/squarey/Desktop/code/scrapers/nextbike/nextbike_venv/lib/python3.10/site-packages/flask/app.py", line 1455, in wsgi_app
+    response = self.full_dispatch_request()
+  File "/home/squarey/Desktop/code/scrapers/nextbike/nextbike_venv/lib/python3.10/site-packages/flask/app.py", line 869, in full_dispatch_request
+    rv = self.handle_user_exception(e)
+  File "/home/squarey/Desktop/code/scrapers/nextbike/nextbike_venv/lib/python3.10/site-packages/flask/app.py", line 867, in full_dispatch_request
+    rv = self.dispatch_request()
+  File "/home/squarey/Desktop/code/scrapers/nextbike/nextbike_venv/lib/python3.10/site-packages/flask/app.py", line 852, in dispatch_request
+    return self.ensure_sync(self.view_functions[rule.endpoint])(**view_args)
+  File "/home/squarey/Desktop/code/scrapers/nextbike/app.py", line 81, in link
+    whatsapp_scrape()
+  File "/home/squarey/Desktop/code/scrapers/nextbike/whatsapp_scraper.py", line 81, in whatsapp_scrape
+    station_checks.click()
+UnboundLocalError: local variable 'station_checks' referenced before assignment
+[2023-12-24 13:06:56 +0000] [192355] [INFO] Handling signal: int
+[2023-12-24 13:06:56 +0000] [192355] [INFO] Shutting down: Master
